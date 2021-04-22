@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN git clone https://github.com/kiwiirc/webircgateway.git
 
-RUN cd webircgateway && go build
+RUN cd webircgateway && CGO_ENABLED=0 GOOS=linux go build
 
 RUN ls /app/webircgateway
 
