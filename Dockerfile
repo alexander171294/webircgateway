@@ -1,17 +1,20 @@
 FROM golang:latest AS builder
 
-ENV GOPATH=/go
+WORKDIR /app
 
-RUN go get github.com/kiwiirc/webircgateway && \
-    cd /go/src/github.com/kiwiirc/webircgateway && \
-    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o webircgateway main.go
+RUN git clone https://github.com/kiwiirc/webircgateway.git
+
+RUN cd webircgateway && go build
+
+RUN ls /app/webircgateway
 
 FROM scratch 
 
 LABEL maintainer="Jeremy.Bouse@UnderGrid.net"
+LABEL maintainer="Alex@hirana.net"
 
-COPY --from=builder /go/src/github.com/kiwiirc/webircgateway/webircgateway /app/
-COPY --from=builder /go/src/github.com/kiwiirc/webircgateway/config.conf.example /app/cfg/config.conf
+COPY --from=builder /app/webircgateway/webircgateway /app/
+COPY --from=builder /app/webircgateway/config.conf.example /app/cfg/config.conf
 
 WORKDIR /app
 
